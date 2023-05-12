@@ -1,15 +1,23 @@
 
-# 使用streamlit对TTS + Wav2Lip版本进行操作
-# 这一部分是Paddle已经完成的版本，部署后更容易操作
+# “数字人交互，与虚拟的自己互动”——用PaddleAvatar打造数字分身，探索人机交互的未来
 import os
 import streamlit as st
 from azure.cognitiveservices.speech import AudioDataStream, SpeechConfig, SpeechSynthesizer, SpeechSynthesisOutputFormat
 from azure.cognitiveservices.speech.audio import AudioOutputConfig
 import azure.cognitiveservices.speech as speechsdk
 from ppgan.apps.wav2lip_predictor import Wav2LipPredictor
+from ppgan.apps.first_order_predictor import FirstOrderPredictor
 from paddlespeech.cli.tts import TTSExecutor
 
-st.title("“数字人交互，与虚拟的自己互动”——用PaddleAvatar打造数字分身，探索人机交互的未来")
+st.set_page_config(
+    page_title="PaddleAvatar App",
+    page_icon="🕴",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
+
+st.title("""“数字人交互，与虚拟的自己互动”""")
+st.success("——用PaddleAvatar打造数字分身，探索人机交互的未来")
 
 if 'generate_face' not in st.session_state:
     st.session_state.generate_face = False
@@ -60,21 +68,21 @@ def azure_tts(text, voice_name = 'XiaochenNeural' , output = 'output.wav', speec
 # 使用paddlespeech的TTS
 def paddlespeech_tts(text, voc, spk_id = 174, lang = 'zh', male=False):
     tts_executor = TTSExecutor()
+    voc = voc.lower()
     if male:
         wav_file = tts_executor(
         text = text,
         output = 'output.wav',
-        am = 'fastspeech2_male',
-        voc = 'pwgan_male',
-        #use_onnx=use_onnx
+        am='fastspeech2_male',
+        voc= voc + '_male'
         )
         return wav_file
     use_onnx = True
     am = 'tacotron2'
-    voc = voc.lower()
+    
     # 混合中文英文
     if lang == 'mix':
-        am += 'fastspeech2_mix'
+        am = 'fastspeech2_mix'
         voc += '_aishell3'
         use_onnx = False
     # 英文语音合成
@@ -106,23 +114,136 @@ def wav2lip(input_face, input_audio, output = 'result.mp4'):
     wav2lip_predictor.run(input_face, input_audio, output)
     return output
 
+
+def fom(input_face, driving_video, output='fom.mp4'):
+    fom_predictor = FirstOrderPredictor(filename = output, 
+                                        face_enhancement = True, 
+                                        ratio = 0.4,
+                                        relative = True,
+                                        image_size= 256, # 512
+                                        adapt_scale = True)
+    fom_predictor.run(input_face, driving_video)
+    return 'output/' + output
+
 st.markdown("<hr />",unsafe_allow_html=True)
-st.write("利用Wav2lip进行生成，请输入图片/视频 和 语音")
-tab1, tab2 = st.tabs(["图片/视频", "语音/文字"])
+st.markdown('''你是否曾经幻想过与自己的虚拟人交互？现在，使用`PaddleAvatar`，您可以将自己的图像、音频和视频转化为一个逼真的数字人视频，与其进行人机交互。
+
+`PaddleAvatar`是一种基于**PaddlePaddle**深度学习框架的数字人生成工具，基于Paddle的许多套件，它可以将您的数字图像、音频和视频合成为一个逼真的数字人视频。除此之外，`PaddleAvatar`还支持进一步的开发，例如使用自然语言处理技术，将数字人视频转化为一个完整的人机交互系统，使得您能够与虚拟的自己进行真实的对话和互动。
+
+使用`PaddleAvatar`，您可以将数字人视频用于各种场合，例如游戏、教育、虚拟现实等等。`PaddleAvatar`为您提供了一个自由创作的数字世界，让您的想象力得到了充分的释放！
+
+所以，现在就使用`PaddleAvatar`，打造自己的数字分身，探索人机交互的未来吧！
+
+''')
+st.image('img/PaddleAvator.png')
+tab1, tab2 = st.tabs(["数字人图片/视频", "数字人语音/文字"])
 with tab1:
-    face = st.file_uploader("输入图片或者视频", type=['jpg', 'png', 'jpeg','mp4'])
-    if face:
-        save_face = face.name
-        if 'mp4' in face.type:
+    image_choose = st.radio(
+                "选择输入 图片或者视频 👇",
+                ["图片","视频"],
+                horizontal=True,
+            )
+    if image_choose == "视频":
+        face = st.file_uploader("输入人脸视频", type=['mp4'])
+        if face:
+            save_face = face.name
             st.video(face)
-        else:
+            with open(save_face, 'wb') as f:
+                f.write(face.read())
+            st.session_state.generate_face = True
+    else:
+        face = st.file_uploader("输入人脸图片", type=['jpg', 'png', 'jpeg'])
+        st.markdown("""对于图片，会加入表情迁移加入一些动作信息，这样会更好的生成最后的数字人分身""")
+        if face:
+            save_face = 'output/fom.mp4'
             st.image(face)
-        with open(save_face, 'wb') as f:
-            f.write(face.read())
-        st.session_state.generate_face = True
+            with open(face.name, 'wb') as f:
+                f.write(face.read())
+            col1,col2 = st.columns(2)
+            col1.write("内置驱动视频")
+            col1.video('zimeng.mp4')
+            fom_btn = col1.button("表情迁移")
+            label = st.empty()
+            if fom_btn:
+                with st.spinner('图片表情迁移中，请耐心等待。。。'):
+                    fom(face.name,'zimeng.mp4')
+                    col2.write("表情迁移结果")
+                    col2.video(save_face)
+                    st.session_state.generate_face = True
+                    label.success('图片表情迁移生成视频成功！！！')
+                    st.balloons()
+                    st.session_state.generate_face = True
+            if os.path.exists(save_face):
+                col2.write("表情迁移结果")
+                col2.video(save_face)
+                st.session_state.generate_face = True
 with tab2:
-    choice = st.selectbox("请选择生成语音还是文字进行生成", ["微软Azure","PaddleSpeech语音合成","上传音频Audio"])
-    if choice == '微软Azure':
+    choice = st.selectbox("请选择 TTS语音合成 或 上传语音音频", ["PaddleSpeech语音合成","微软Azure","上传音频Audio"])
+    
+    if choice == 'PaddleSpeech语音合成':
+        st.markdown("""
+        声码器说明：这里预制了三种声码器【PWGan】【WaveRnn】【HifiGan】, 三种声码器效果和生成时间有比较大的差距，请跟进自己的需要进行选择。不过只选择了前两种，因为WaveRNN太慢了
+
+        | 声码器 | 音频质量 | 生成速度 |
+        | :----: | :----: | :----: |
+        | PWGan | 中等 | 中等 |
+        | WaveRnn | 高 | 非常慢（耐心等待） |
+        | HifiGan | 低 | 快 |
+
+        """)
+        save_audio = "output.wav"
+        st.markdown("可选择高质量的男声音色，或者可以选择很多种音色")
+        tab3, tab4 = st.tabs(["高质量男声音色", "多种音色"])
+        
+        with tab4:
+            male = False
+            text = st.text_input("输入文本，支持中英双语！", value = "你好，我是数字人分身，很高兴认识大家！")
+            # st.markdown("<hr />",unsafe_allow_html=True)
+            voc = st.selectbox(
+                '选择声码器',
+                ('HifiGan','PWGan'))
+
+            lang = st.selectbox(
+                '选择语言）',
+                ('zh','mix','en'))
+
+            if lang == 'mix':
+                spk_id = int(st.slider('选择一个说话人的ID，音频质量不一致（有的说话人音频质量较高，需要仔细筛选）', -174, 174, 174))
+            elif lang == 'zh':
+                spk_id = int(st.slider('选择一个说话人的ID，音频质量不一致（有的说话人音频质量较高，需要仔细筛选）', -174, 173, 0))
+            elif lang == 'en':
+                spk_id = 174
+        with tab3:
+            male = True
+            text = st.text_input("请输入所需要语音合成的文本", value = "你好，我是数字人分身，很高兴认识大家！")
+            voc = st.selectbox(
+                '选择高质量男声的声码器',
+                ('HifiGan','PWGan'))
+            lang, spk_id = '',''
+        st.markdown("<hr />",unsafe_allow_html=True)
+        st.write("首次运行的时候，后台可能会下一些权重和数据，速度可能比较慢")
+        st.button("开始合成音频", on_click = generate_on_wav)
+        label = st.empty()
+
+        if st.session_state.generate_on_wav:
+            label.warning('音频合成中，请耐心等待！')
+            paddlespeech_tts(text, voc, spk_id, lang, male)
+            
+            st.session_state.generate_on_wav = False
+            st.session_state.generate_audio = True
+            label.success('音频合成成功！！！')
+            
+        if os.path.exists(save_audio):
+            st.audio(save_audio)
+            with open(save_audio,'rb') as file:
+                st.download_button(
+                    label="Download Audio",
+                    data=file,
+                    file_name=save_audio,
+                    # mime='',
+                )
+            st.session_state.generate_audio = True
+    elif choice == '微软Azure':
         save_audio = 'output.wav'
         st.markdown("<hr />",unsafe_allow_html=True)
         st.markdown("""
@@ -170,65 +291,9 @@ with tab2:
                     file_name=save_audio,
                     # mime='',
                 )
-    elif choice == 'PaddleSpeech语音合成':
-        save_audio = "output.wav"
-        
-        tab3, tab4 = st.tabs(["高质量男声音色", "多种音色"])
-        with tab4:
-            st.markdown("""
-    声码器说明：这里预制了三种声码器【PWGan】【WaveRnn】【HifiGan】, 三种声码器效果和生成时间有比较大的差距，请跟进自己的需要进行选择。
-
-    | 声码器 | 音频质量 | 生成速度 |
-    | :----: | :----: | :----: |
-    | PWGan | 中等 | 中等 |
-    | WaveRnn | 高 | 非常慢（耐心等待） |
-    | HifiGan | 低 | 快 |
-
-    """)
-            st.markdown("<hr />",unsafe_allow_html=True)
-            text = st.text_input("输入文本，支持中英双语！", value = "你好，我是数字人分身，很搞笑认识大家！")
-
-            male = False
-            voc = st.selectbox(
-                '选择声码器',
-                ('HifiGan','PWGan'))
-
-            lang = st.selectbox(
-                '选择语言）',
-                ('zh','mix','en'))
-
-            if lang == 'mix':
-                spk_id = int(st.slider('选择一个说话人的ID，音频质量不一致（有的说话人音频质量较高）', -174, 174, 174))
-            elif lang == 'zh':
-                spk_id = int(st.slider('选择一个说话人的ID，音频质量不一致（有的说话人音频质量较高）', -174, 173, 0))
-            elif lang == 'en':
-                spk_id = 174
-        with tab3:
-            male = True
-            text = st.text_input("输入需要语音合成的文本", value = "你好，我是数字人分身，很搞笑认识大家！")
-        st.markdown("<hr />",unsafe_allow_html=True)
-        st.button("开始合成音频", on_click = generate_on_wav)
-        label = st.empty()
-
-        if st.session_state.generate_on_wav:
-            label.warning('音频合成中，请耐心等待！')
-            paddlespeech_tts(text, voc, spk_id, lang)
-            
-            st.session_state.generate_on_wav = False
-            st.session_state.generate_audio = True
-            label.success('音频合成成功！！！')
-            
-        if os.path.exists(save_audio):
-            st.audio(save_audio)
-            with open(save_audio,'rb') as file:
-                st.download_button(
-                    label="Download Audio",
-                    data=file,
-                    file_name=save_audio,
-                )
-                
-    elif choice == 'Audio': 
+    elif choice == '上传音频Audio': 
         audio = st.file_uploader("输入音频", type=['wav', 'mp3'])
+        
         if audio:
             st.audio(audio)
             save_audio = audio.name
@@ -238,7 +303,7 @@ with tab2:
 st.markdown("<hr />",unsafe_allow_html=True)
 
 
-st.button("PaddleAvator生成", on_click = generate_on_video)
+st.button("PaddleAvator生成", type='primary', on_click = generate_on_video)
 label = st.empty()
 if st.session_state.generate_on_video:
     if not st.session_state.generate_face or not st.session_state.generate_audio:
