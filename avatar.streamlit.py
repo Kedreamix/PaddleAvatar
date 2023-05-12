@@ -58,22 +58,34 @@ def azure_tts(text, voice_name = 'XiaochenNeural' , output = 'output.wav', speec
     stream.save_to_wav_file(output)
 
 # 使用paddlespeech的TTS
-def paddlespeech_tts(text, voc, spk_id = 174, lang = 'zh'):
+def paddlespeech_tts(text, voc, spk_id = 174, lang = 'zh', male=False):
     tts_executor = TTSExecutor()
+    if male:
+        wav_file = tts_executor(
+        text = text,
+        output = 'output.wav',
+        am = 'fastspeech2_male',
+        voc = 'pwgan_male',
+        #use_onnx=use_onnx
+        )
+        return wav_file
     use_onnx = True
-    am = 'fastspeech2'
+    am = 'tacotron2'
     voc = voc.lower()
+    # 混合中文英文
     if lang == 'mix':
-        am += '_mix'
+        am += 'fastspeech2_mix'
         voc += '_aishell3'
         use_onnx = False
+    # 英文语音合成
     elif lang == 'en':
         am += '_ljspeech'
         voc += '_ljspeech'
+    # 中文语音合成
     elif lang == 'zh':
         am += '_aishell3'
         voc += '_aishell3'
-    # 生成音频
+    # 语音合成
     wav_file = tts_executor(
         text = text,
         output = 'output.wav',
@@ -160,7 +172,10 @@ with tab2:
                 )
     elif choice == 'PaddleSpeech语音合成':
         save_audio = "output.wav"
-        st.markdown("""
+        
+        tab3, tab4 = st.tabs(["高质量男声音色", "多种音色"])
+        with tab4:
+            st.markdown("""
     声码器说明：这里预制了三种声码器【PWGan】【WaveRnn】【HifiGan】, 三种声码器效果和生成时间有比较大的差距，请跟进自己的需要进行选择。
 
     | 声码器 | 音频质量 | 生成速度 |
@@ -170,24 +185,27 @@ with tab2:
     | HifiGan | 低 | 快 |
 
     """)
-        st.markdown("<hr />",unsafe_allow_html=True)
-        text = st.text_input("输入文本，支持中英双语！", value = "欢迎使用 Paddle Speech 做语音合成工作！一起来玩吧！")
-        # st.markdown("<hr />",unsafe_allow_html=True)
-        voc = st.selectbox(
-            '选择声码器',
-            ('HifiGan','PWGan'))
+            st.markdown("<hr />",unsafe_allow_html=True)
+            text = st.text_input("输入文本，支持中英双语！", value = "你好，我是数字人分身，很搞笑认识大家！")
 
-        lang = st.selectbox(
-            '选择语言）',
-            ('zh','mix','en'))
+            male = False
+            voc = st.selectbox(
+                '选择声码器',
+                ('HifiGan','PWGan'))
 
-        if lang == 'mix':
-            spk_id = int(st.slider('选择一个说话人的ID，音频质量不一致（有的说话人音频质量较高）', -174, 174, 174))
-        elif lang == 'zh':
-            spk_id = int(st.slider('选择一个说话人的ID，音频质量不一致（有的说话人音频质量较高）', -174, 173, 0))
-        elif lang == 'en':
-            spk_id = 174
-            
+            lang = st.selectbox(
+                '选择语言）',
+                ('zh','mix','en'))
+
+            if lang == 'mix':
+                spk_id = int(st.slider('选择一个说话人的ID，音频质量不一致（有的说话人音频质量较高）', -174, 174, 174))
+            elif lang == 'zh':
+                spk_id = int(st.slider('选择一个说话人的ID，音频质量不一致（有的说话人音频质量较高）', -174, 173, 0))
+            elif lang == 'en':
+                spk_id = 174
+        with tab3:
+            male = True
+            text = st.text_input("输入需要语音合成的文本", value = "你好，我是数字人分身，很搞笑认识大家！")
         st.markdown("<hr />",unsafe_allow_html=True)
         st.button("开始合成音频", on_click = generate_on_wav)
         label = st.empty()
@@ -207,8 +225,8 @@ with tab2:
                     label="Download Audio",
                     data=file,
                     file_name=save_audio,
-                    # mime='',
                 )
+                
     elif choice == 'Audio': 
         audio = st.file_uploader("输入音频", type=['wav', 'mp3'])
         if audio:
