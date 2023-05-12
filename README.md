@@ -87,12 +87,21 @@ streamlit run avatar.streamlit.py
 
 ## 🎯 TO DO LIST
 
-在本仓库之中，已经实现了第3和第4个模块，但是离完整的人机交互系统差一部分，所以这一部分还可以继续努力
+
+在本仓库 https://github.com/Kedreamix/PaddleAvatar 之中，已经实现了第3和第4个模块，但是离完整的人机交互系统差一部分，所以这一部分还可以继续努力
 
 - [x] 加入表情迁移（丰富头部动作信息）
 - [ ] 实时语音识别（人与数字人之间就可以通过语音进行对话交流)
 - [ ] 语音克隆技术（语音克隆合成自己声音，提高数字人分身的真实感和互动体验）
 - [ ] 类GPT对话系统（提高数字人的交互性和真实感，增强数字人的智能）
+
+
+
+## AIstudio在线体验
+
+不过似乎AIstudio的应用部署加载好久，不知道有什么快的方法
+
+[https://aistudio.baidu.com/aistudio/projectdetail/6154230](https://aistudio.baidu.com/aistudio/projectdetail/6154230)
 
 
 
