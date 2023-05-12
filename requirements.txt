@@ -3,3 +3,5 @@ ppgan==2.1.0
 streamlit
 # 微软语音 可选
 azure-cognitiveservices-speech==1.26.0
+pandas
+matplotlib
