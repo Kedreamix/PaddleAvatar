@@ -52,11 +52,18 @@ pip install -r requirements.txt
 
 ## 🔮 3.网页部署（Streamlit）
 
-这里可以使用`streamlit`进行网页端的部署，这样就利用可视化进行体验
+这里可以使用`streamlit`进行网页端的部署，这样就利用可视化进行体验，这里可以看到有一个8501的端口，打开来即可看到网页
 
 ```bash
 streamlit avator.streamlit.py
 ```
+
+
+
+对于TTS，文字转语音来说，我设置了两种方式
+
+- PaddleSpeech语音合成，可选择多种声音和语调，可以调节语言和人
+- Azure微软语音合成，调用微软的API进行语音合成，不过需要填入密钥（这里不提供）
 
 
 
