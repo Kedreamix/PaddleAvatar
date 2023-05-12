@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 
 
-![PaddleAvator](img\PaddleAvatar.png)
+![PaddleAvator](img/PaddleAvatar.png)
 
 
 
