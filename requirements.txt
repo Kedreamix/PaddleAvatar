@@ -1,4 +1,5 @@
-paddlespeech==1.2.0
-
+paddlespeech==1.4.1
 ppgan==2.1.0
-
+streamlit
+# 微软语音 可选
+azure-cognitiveservices-speech==1.26.0

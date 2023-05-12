@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 
 
-![PaddleAvator](img\PaddleAvator.png)
+![PaddleAvator](img\PaddleAvatar.png)
 
 
 
@@ -55,7 +55,7 @@ pip install -r requirements.txt
 这里可以使用`streamlit`进行网页端的部署，这样就利用可视化进行体验，这里可以看到有一个8501的端口，打开来即可看到网页
 
 ```bash
-streamlit avator.streamlit.py
+streamlit run avatar.streamlit.py
 ```
 
 
@@ -89,7 +89,7 @@ streamlit avator.streamlit.py
 
 在本仓库之中，已经实现了第3和第4个模块，但是离完整的人机交互系统差一部分，所以这一部分还可以继续努力
 
-- [ ] 加入表情迁移（丰富头部动作信息）
+- [x] 加入表情迁移（丰富头部动作信息）
 - [ ] 实时语音识别（人与数字人之间就可以通过语音进行对话交流)
 - [ ] 语音克隆技术（语音克隆合成自己声音，提高数字人分身的真实感和互动体验）
 - [ ] 类GPT对话系统（提高数字人的交互性和真实感，增强数字人的智能）
