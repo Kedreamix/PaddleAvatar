@@ -1,0 +1,4 @@
+paddlespeech==1.2.0
+
+ppgan==2.1.0
+
