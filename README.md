@@ -97,7 +97,7 @@ streamlit run avatar.streamlit.py
 
 
 
-## AIstudio在线体验
+## ✨ AIstudio在线体验
 
 不过似乎AIstudio的应用部署加载好久，不知道有什么快的方法
 
