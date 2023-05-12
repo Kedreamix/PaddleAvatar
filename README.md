@@ -58,7 +58,7 @@ pip install -r requirements.txt
 streamlit run avatar.streamlit.py
 ```
 
-
+![在这里插入图片描述](https://img-blog.csdnimg.cn/f25fa7c9d96640db9744a556a1a258e6.png)
 
 对于TTS，文字转语音来说，我设置了两种方式
 
