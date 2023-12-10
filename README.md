@@ -10,6 +10,9 @@
 
 所以，现在就使用`PaddleAvatar`，打造自己的数字分身，探索人机交互的未来吧！
 
+**更新**
+2023.12 已经成功加入语音识别和类GPT的对话系统，这一部分已经放在了另一个Github中，大家可以随时follow，用pytorch也会更加的稳定，得到更好的效果
+同时b站也有简单的讲解视频，大家代码和教程都可以自取 [https://github.com/Kedreamix/Linly-Talker](https://github.com/Kedreamix/Linly-Talker)
 
 
 ## 🪀 环境说明
