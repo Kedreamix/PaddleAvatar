@@ -135,7 +135,7 @@ st.markdown('''你是否曾经幻想过与自己的虚拟人交互？现在，�
 所以，现在就使用`PaddleAvatar`，打造自己的数字分身，探索人机交互的未来吧！
 
 ''')
-st.image('img/PaddleAvator.png')
+st.image('img/PaddleAvatar.png')
 tab1, tab2 = st.tabs(["数字人图片/视频", "数字人语音/文字"])
 with tab1:
     image_choose = st.radio(
@@ -303,7 +303,7 @@ with tab2:
 st.markdown("<hr />",unsafe_allow_html=True)
 
 
-st.button("PaddleAvator生成", type='primary', on_click = generate_on_video)
+st.button("PaddleAvatar生成", type='primary', on_click = generate_on_video)
 label = st.empty()
 if st.session_state.generate_on_video:
     if not st.session_state.generate_face or not st.session_state.generate_audio:
