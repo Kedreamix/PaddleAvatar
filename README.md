@@ -1,6 +1,7 @@
 #  “数字人交互，与虚拟的自己互动”——用PaddleAvatar打造数字分身，探索人机交互的未来
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/Kedreamix/PaddleAvatar)
+[![Open in Bohrium](https://cdn.dp.tech/bohrium/web/static/images/open-in-bohrium.svg)](https://bohrium.dp.tech/notebooks/51411296135?utm_source=github_kol&utm_medium=github&utm_campaign=openinbohrium&utm_term=PaddleAvatar&test=aaa)
 
 你是否曾经幻想过与自己的虚拟人交互？现在，使用`PaddleAvatar`，您可以将自己的图像、音频和视频转化为一个逼真的数字人视频，与其进行人机交互。
 
